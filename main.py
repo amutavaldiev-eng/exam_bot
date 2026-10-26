@@ -85,4 +85,13 @@ async def items(message: Message):
         await message.answer(text)
     else:
         await message.answer("No available items ❌")
-   
+    
+    
+@dp.message(Command("rent"))
+async def rent_get(message: Message, command: CommandObject):
+    data = command.args.split(" ")
+    result = await rent(int(data[0]), message.from_user.id)
+    if result:
+        await message.answer("Item rented successfully ✅")
+    else:
+        await message.answer("Item rented failed ❌")

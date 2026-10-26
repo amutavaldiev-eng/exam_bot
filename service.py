@@ -48,3 +48,35 @@ async def get_items():
         await conn.close()
         
         
+async def rent(item_id, user_id):
+    try:
+        conn = await connection_db()
+        item = await conn.fetchrow("""
+            select * from items
+            where id = $1 and is_rented = false
+        """, item_id)
+        if not item:
+            return False
+        rented_at = datetime.now()
+        due_date = rented_at + timedelta(days=7)
+
+        await conn.execute("""
+            insert into rentals (user_id, item_id, rented_at, due_date)
+            values ($1, $2, $3, $4)
+        """, user_id, item_id, rented_at, due_date)
+
+        await conn.execute("""
+            update items
+            set is_rented = true
+            where id = $1
+        """, item_id)
+
+        return True
+
+    except Exception as Error:
+        print(f"Rent item Error: {Error}")
+        return False
+
+    finally:
+            await conn.close() 
+            
