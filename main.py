@@ -106,3 +106,33 @@ async def return_iteme(message: Message, command: CommandObject):
         await message.answer("Item returned failed ❌")
 
     
+    
+@dp.message(F.text == "📦 My Rentals")
+@dp.message(Command("my_rentals"))
+async def my_rentals(message: Message):
+    data = await get_my_rentals(message.from_user.id)
+    if data:
+        text = ""
+        for item in data:
+            text += f"""
+🛠️ Name: {item['name']}
+🆔 ID: {item['item_id']}
+📌 Rented: {item['rented_at']}
+⏰ Due date: {item['due_date']}
+↩️ Returned: {item['returned_at']}
+💰 Late fee: {item['late_fee']} Somoni
+"""
+
+        await message.answer(text)
+    else:
+        await message.answer("You have no rentals ❌")
+
+    
+async def main():
+    await create_table()
+    print("Bot is running...")
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

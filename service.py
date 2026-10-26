@@ -119,3 +119,22 @@ async def return_item(item_id, user_id):
     finally:
             await conn.close()
 
+
+
+async def get_my_rentals(user_id):
+    try:
+        conn = await connection_db()
+        data = await conn.fetch("""
+            select rentals.*, items.name from rentals
+            join items on rentals.item_id = items.id
+            where rentals.user_id = $1
+            order by rentals.rented_at DESC
+        """, user_id)
+
+        return data
+    except Exception as Error:
+        print(f"My rentals Error: {Error}")
+        return False
+
+    finally:
+        await conn.close()
