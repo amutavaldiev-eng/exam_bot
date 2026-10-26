@@ -15,4 +15,19 @@ async def get_user_by_id(user_id):
         await conn.close()
         
 
-    
+        
+async def add_item(name):
+    try:
+        conn = await connection_db()
+        await conn.execute("""
+        insert into items(name) values
+        ($1)              
+                    """,name)
+        return True
+        
+    except Exception as Error:
+        print(f"Add item Error: {Error}")
+        return False
+    finally:
+        await conn.close()
+

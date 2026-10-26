@@ -55,3 +55,17 @@ async def help(message: Message):
 💰 Late fee: 5000 somoni per overdue day.
 """)
 
+
+
+@dp.message(Command("add_item"))
+async def add_items(message: Message, command: CommandObject):
+    data = command.args
+    if not data:
+        await message.answer("❌ Please enter an item name!\nExample: /add_item something...")
+        return
+    data = await add_item(data)
+    if data:
+        await message.answer("Item added successfully ✅")
+    else:
+        await message.answer("Item added failed ❌")
+  
