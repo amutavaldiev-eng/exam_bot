@@ -31,3 +31,20 @@ async def add_item(name):
     finally:
         await conn.close()
 
+
+
+async def get_items():
+    try:
+        conn = await connection_db()
+        data = await conn.fetch("""
+        select * from items
+        where is_rented = false;
+                        """,)
+        return data
+    except Exception as Error:
+        print(f"Get item Error: {Error}")
+        return False
+    finally:
+        await conn.close()
+        
+        

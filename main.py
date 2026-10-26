@@ -68,4 +68,21 @@ async def add_items(message: Message, command: CommandObject):
         await message.answer("Item added successfully ✅")
     else:
         await message.answer("Item added failed ❌")
-  
+    
+@dp.message(F.text == "🛠️ Catalog")
+@dp.message(Command("items"))
+async def items(message: Message):
+    data = await get_items()
+    if data:
+        text = ""
+        for item in data:
+            text += f"""
+🆔 ID: {item['id']}
+🛠️ Name: {item['name']}
+📌 Rented status: {item['is_rented']}
+📅 Created :{item['created_at']}
+"""
+        await message.answer(text)
+    else:
+        await message.answer("No available items ❌")
+   
