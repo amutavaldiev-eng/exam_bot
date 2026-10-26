@@ -80,3 +80,42 @@ async def rent(item_id, user_id):
     finally:
             await conn.close() 
             
+
+async def return_item(item_id, user_id):
+    try:
+        conn = await connection_db()
+
+        item = await conn.fetchrow("""
+            select * FROM rentals
+            where item_id = $1 and user_id = $2 and returned_at IS NULL
+        """, item_id, user_id)
+
+        if not item:
+            return False
+        returned_at = datetime.now()
+        late_fee = 0
+        if returned_at > item['due_date']:
+            late_fee = 5000
+
+        await conn.execute("""
+            update rentals
+            set returned_at = $1, late_fee = $2
+            where item_id = $3 and user_id = $4
+            and returned_at is null
+        """, returned_at, late_fee, item_id, user_id)
+
+        await conn.execute("""
+            update items
+            set is_rented = false
+            where id = $1
+        """, item_id)
+
+        return True
+
+    except Exception as Error:
+        print(f"Return item Error: {Error}")
+        return False
+
+    finally:
+            await conn.close()
+

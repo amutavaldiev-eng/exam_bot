@@ -95,3 +95,14 @@ async def rent_get(message: Message, command: CommandObject):
         await message.answer("Item rented successfully ✅")
     else:
         await message.answer("Item rented failed ❌")
+
+@dp.message(Command("return_item"))
+async def return_iteme(message: Message, command: CommandObject):
+    data = command.args.split(" ")
+    result = await return_item(int(data[0]), message.from_user.id)
+    if result:
+        await message.answer("Item returned successfully ✅")
+    else:
+        await message.answer("Item returned failed ❌")
+
+    
